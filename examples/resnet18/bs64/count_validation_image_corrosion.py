@@ -19,20 +19,6 @@ parser.add_argument('--verbose', action='store_true')
 
 args = parser.parse_args()
 
-# %% Temporary workspace
-
-data = np.loadtxt(
-    "validation_tile_preds.csv",
-    dtype={
-        'names': ('tile_id', 'image_id', 'tile_score', 'tile_pred', 'tile_target', 'image_target'),
-        'formats': ('<U100', 'U100', float, int, int, int)
-    },
-    delimiter=',',
-    skiprows=1
-)
-
-image_dict = count_image_corrosion(data['image_id'], data['tile_pred'], data['tile_target'], data['image_target'])
-
 # %% Main function
 
 def main():
