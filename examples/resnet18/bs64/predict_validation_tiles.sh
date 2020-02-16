@@ -6,6 +6,6 @@ python predict_validation_tiles.py \
     --model_path $HOME/opt/output/nccd/examples/resnet18/bs64/model \
     --model resnet18 \
     --batch_size 64 \
-    --output_path $HOME/opt/output \
+    --output_path $HOME/opt/output/nccd/examples/resnet18/bs64 \
     --output_filename validation_tile_preds.csv \
     --verbose
