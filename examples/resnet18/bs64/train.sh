@@ -1,6 +1,6 @@
 #!/bin/bash
 
-python trainer.py \
+python train.py \
     --data_path $HOME/opt/data/aisi2019/nuclear_canister_data \
     --model resnet18 \
     --batch_size 64 \
