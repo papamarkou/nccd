@@ -1,0 +1,5 @@
+fastai
+numpy
+scikit-learn
+torch>=1.4.0
+wheel>=0.22
