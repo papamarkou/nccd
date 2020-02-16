@@ -1,6 +1,6 @@
 #!/bin/bash
 
-python predictor.py \
+python predict_validation_tiles.py \
     --data_path $HOME/opt/data/aisi2019/nuclear_canister_data \
     --test_dirname validation \
     --model_path $HOME/opt/output/nccd/examples/resnet18/bs64/model \
