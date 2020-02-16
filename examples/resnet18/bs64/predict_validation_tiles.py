@@ -9,9 +9,9 @@ import torch
 from torchvision import models
 from fastai.vision import ImageDataBunch, get_transforms
 
-from nccd.parse import get_tile_filename_info
+from nccd.io import get_tile_filename_info
+from nccd.io import tile_output_to_array
 from nccd.predict import predict_tiles
-from nccd.to_np import tile_output_to_array
 
 # %% Parse command line arguments
 
