@@ -70,7 +70,7 @@ def main():
 
     # Save tile IDs, image IDs, tile prediction scores, tile predictions and tile true labels to file
     np.savetxt(
-        os.path.join(args.output_path, args.output_tile_preds_filename),
+        os.path.join(args.output_path, args.output_filename),
         tile_output,
         fmt=['%s', '%s', '%f', '%d', '%d', '%d'],
         delimiter=',',
