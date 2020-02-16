@@ -8,7 +8,7 @@ import numpy as np
 from torchvision import models
 from fastai.vision import ImageDataBunch, get_transforms
 
-from nccd import fit_model
+from nccd.train import fit_model
 
 # %% Parse command line arguments
 
