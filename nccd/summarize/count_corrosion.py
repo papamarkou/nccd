@@ -1,6 +1,6 @@
 # %% Function for counting number of corroded tiles per image
 
-def count_image_corrosion(image_ids, tile_preds, tile_targets, image_targets, threshold):
+def count_image_corrosion(image_ids, tile_preds, tile_targets, image_targets):
     image_dict = dict()
 
     for image_id, image_target in zip(image_ids, image_targets):
