@@ -1,3 +1,7 @@
+nccd.egg-info
 nccd/__pycache__
+nccd/io/__pycache__
+nccd/predict/__pycache__
 nccd/summaries/__pycache__
+nccd/train/__pycache__
 nccd/tune/__pycache__

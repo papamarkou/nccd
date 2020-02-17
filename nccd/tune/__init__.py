@@ -1,2 +1,2 @@
 from .tune_lr import tune_lr
-from .tune import tune_thres
+from .tune_thres import tune_thres

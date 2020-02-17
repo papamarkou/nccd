@@ -8,7 +8,7 @@ from fastai.vision import DatasetType, cnn_learner, accuracy
 
 from nccd.io import get_tile_filename_info, image_output_to_array
 from nccd.summaries import count_image_corrosion, error_metrics
-from nccd.tune import predict_images
+from nccd.predict import predict_images
 
 # %% Function for computing tile prediction scores using trained model
 
