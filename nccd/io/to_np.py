@@ -8,21 +8,21 @@ def tile_output_to_array(tile_ids, image_ids, tile_scores, tile_preds, tile_targ
     tile_output = np.empty(
         len(tile_ids),
         dtype=[
-            ('col1', '<U{0}'.format(np.max([len(id) for id in tile_ids]))),
-            ('col2', '<U{0}'.format(np.max([len(id) for id in image_ids]))),
-            ('col3', float),
-            ('col4', int),
-            ('col5', int),
-            ('col6', int)
+            ('tile_id', '<U{0}'.format(np.max([len(id) for id in tile_ids]))),
+            ('image_id', '<U{0}'.format(np.max([len(id) for id in image_ids]))),
+            ('tile_score', float),
+            ('tile_pred', int),
+            ('tile_target', int),
+            ('image_target', int)
         ]
     )
     
-    tile_output['col1'] = tile_ids
-    tile_output['col2'] = image_ids
-    tile_output['col3'] = tile_scores[: , 1].clone().detach().numpy()
-    tile_output['col4'] = tile_preds.clone().detach().cpu()
-    tile_output['col5'] = tile_targets.clone().detach().cpu()
-    tile_output['col6'] = image_targets
+    tile_output['tile_id'] = tile_ids
+    tile_output['image_id'] = image_ids
+    tile_output['tile_score'] = tile_scores[: , 1].clone().detach().numpy()
+    tile_output['tile_pred'] = tile_preds.clone().detach().cpu()
+    tile_output['tile_target'] = tile_targets.clone().detach().cpu()
+    tile_output['image_target'] = image_targets
     
     return tile_output
 
@@ -31,7 +31,11 @@ def tile_output_to_array(tile_ids, image_ids, tile_scores, tile_preds, tile_targ
 def image_corrosion_output_to_array(image_dict):
     image_corrosion_output = np.empty(
         len(image_dict),
-        dtype=[('col1', '<U{0}'.format(np.max([len(k) for k in image_dict.keys()]))), ('col2', int), ('col3', int)]
+        dtype=[
+            ('image_id', '<U{0}'.format(np.max([len(k) for k in image_dict.keys()]))),
+            ('image_corrosion_count', int),
+            ('image_target', int)
+        ]
     )
 
     for i, (k, v) in enumerate(image_dict.items()):
@@ -45,10 +49,10 @@ def image_output_to_array(image_dict):
     image_output = np.empty(
         len(image_dict),
         dtype=[
-            ('col1', '<U{0}'.format(np.max([len(k) for k in image_dict.keys()]))),
-            ('col2', int),
-            ('col3', int),
-            ('col4', int)
+            ('image_id', '<U{0}'.format(np.max([len(k) for k in image_dict.keys()]))),
+            ('image_corrosion_count', int),
+            ('image_pred', int),
+            ('image_target', int)
         ]
     )
 
