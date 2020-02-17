@@ -6,7 +6,7 @@ import argparse
 import numpy as np
 
 from nccd.io import image_corrosion_output_to_array
-from nccd.summarize import count_image_corrosion
+from nccd.summaries import count_image_corrosion
 
 # %% Parse command line arguments
 

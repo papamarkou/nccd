@@ -1,0 +1,19 @@
+# %% Import packages
+
+from fastai.vision import DatasetType, cnn_learner, accuracy
+
+# %% Function for computing tile prediction scores using trained model
+
+def tune_thres(data, model_type, trained_model, thresholds):
+    for thres in thresholds:
+        # Set up CNN learner
+        learner = cnn_learner(data, model_type, metrics=accuracy).mixup()
+
+        # Load trained model
+        learner.load(trained_model)
+
+        # Compute precition score
+        tile_scores, tile_targets = learner.get_preds(ds_type=DatasetType.Valid)
+
+        # Return predictions and true labels
+        return tile_scores, tile_targets
