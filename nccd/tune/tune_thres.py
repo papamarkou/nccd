@@ -29,7 +29,7 @@ def tune_thres(data, model_type, trained_model, thres, tpr_lb=None, fpr_ub=None,
 
     for i in range(len(thres)):
         if verbose:
-            print("Checking thres", i+1, "out of", len(thres))
+            print("Checking threshold", i+1, "out of", len(thres))
 
         # Set up CNN learner
         learner = cnn_learner(data, model_type, metrics=accuracy).mixup()

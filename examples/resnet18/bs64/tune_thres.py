@@ -62,12 +62,12 @@ def main():
 
     np.savetxt(
         os.path.join(args.output_path, args.output_optimal_thres_filename),
-        [
+        [[
             optimal_thres,
             thres_metrics['f1'][optimal_thres_idx],
             thres_metrics['tpr'][optimal_thres_idx],
             thres_metrics['fpr'][optimal_thres_idx]
-        ],
+        ]],
         fmt=['%f', '%f', '%f', '%f'],
         delimiter=',',
         newline='\n',

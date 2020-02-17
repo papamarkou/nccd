@@ -6,7 +6,7 @@ python tune_thres.py \
     --model_path $HOME/opt/output/nccd/examples/resnet18/bs64/model \
     --model resnet18 \
     --batch_size 64 \
-    --thresholds 1 2 \
+    --thres 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 \
     --output_path $HOME/opt/output/nccd/examples/resnet18/bs64 \
     --output_optimal_thres_filename validation_optimal_thres.csv \
     --output_thres_metrics_filename validation_thres_metrics.csv \
