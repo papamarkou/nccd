@@ -12,7 +12,7 @@ from nccd.predict import predict_images
 
 # %% Function for computing tile prediction scores using trained model
 
-def tune_thres(data, model_type, trained_model, thres, tpr_lb=None, fpr_ub=None, verbose=True):
+def tune_thres(data, model_type, trained_model, ps, thres, tpr_lb=None, fpr_ub=None, verbose=True):
     # Get tile IDS, image IDs and image targets
     tile_ids, image_ids, image_targets = get_tile_filename_info(data)
 
@@ -28,7 +28,7 @@ def tune_thres(data, model_type, trained_model, thres, tpr_lb=None, fpr_ub=None,
     )
 
     # Set up CNN learner
-    learner = cnn_learner(data, model_type, metrics=accuracy).mixup()
+    learner = cnn_learner(data, model_type, metrics=accuracy, ps=ps).mixup()
 
     # Load trained model
     learner.load(trained_model)
