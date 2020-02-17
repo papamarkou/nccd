@@ -60,3 +60,16 @@ def image_output_to_array(image_dict):
         image_output[i] = k, v[0], v[1], v[2]
         
     return image_output
+
+# %% Function for placing image metrics to a numpy array
+    
+def image_metrics_to_array(image_dict):
+    image_metrics = np.empty(
+        len(image_dict),
+        dtype=[('metric_name', '<U{0}'.format(np.max([len(k) for k in image_dict.keys()]))), ('metric_value', float)]
+    )
+
+    for i, (k, v) in enumerate(image_dict.items()):
+        image_metrics[i] = k, v
+        
+    return image_metrics
