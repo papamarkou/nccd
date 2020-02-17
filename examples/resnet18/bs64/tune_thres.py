@@ -11,7 +11,7 @@ from fastai.vision import ImageDataBunch, get_transforms
 
 from nccd.io import get_tile_filename_info
 from nccd.io import tile_output_to_array
-from nccd.tune_thres import tune_thres
+from nccd.tune import tune_thres
 from nccd.predict import predict_tiles
 
 # %% Parse command line arguments
