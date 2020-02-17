@@ -37,8 +37,6 @@ parser.add_argument('--verbose', action='store_true')
 
 args = parser.parse_args()
 
-print(args)
-
 # %% Main function
 
 def main():
@@ -55,11 +53,13 @@ def main():
     if args.verbose:
         print(len(data.valid_ds), "test images")
 
+    # Compute F1, TPR and FPR for different thresholds and find optimal threshold
     optimal_thres, optimal_thres_idx, thres_metrics = tune_thres(
         data, model_type[args.model], args.model_path, args.thres,
         tpr_lb=args.tpr_lb, fpr_ub=args.fpr_ub, verbose=args.verbose
     )
 
+    # Save optimal threshold and associated F1 score, TPF and FPR to file
     np.savetxt(
         os.path.join(args.output_path, args.output_optimal_thres_filename),
         [[
@@ -75,7 +75,7 @@ def main():
         comments=''
     )
 
-    # Save thres, F1 score, true positive rate and false positive rate to file
+    # Save thresholds, F1 score, TPR and FPR to file
     np.savetxt(
         os.path.join(args.output_path, args.output_thres_metrics_filename),
         thres_metrics,

@@ -16,7 +16,7 @@ def tune_thres(data, model_type, trained_model, thres, tpr_lb=None, fpr_ub=None,
     # Get tile IDS, image IDs and image targets
     tile_ids, image_ids, image_targets = get_tile_filename_info(data)
 
-    #
+    # Allocate array that will hold error metrics for different thresholds
     thres_output = np.empty(
         len(thres),
         dtype=[
@@ -27,38 +27,40 @@ def tune_thres(data, model_type, trained_model, thres, tpr_lb=None, fpr_ub=None,
         ]
     )
 
+    # Set up CNN learner
+    learner = cnn_learner(data, model_type, metrics=accuracy).mixup()
+
+    # Load trained model
+    learner.load(trained_model)
+
+    # Compute precition score
+    tile_scores, tile_targets = learner.get_preds(ds_type=DatasetType.Valid)
+
+    # Make tile predictions using prediction scores
+    tile_preds = torch.argmax(tile_scores, 1)
+
     for i in range(len(thres)):
         if verbose:
-            print("Checking threshold", i+1, "out of", len(thres))
-
-        # Set up CNN learner
-        learner = cnn_learner(data, model_type, metrics=accuracy).mixup()
-
-        # Load trained model
-        learner.load(trained_model)
-
-        # Compute precition score
-        tile_scores, tile_targets = learner.get_preds(ds_type=DatasetType.Valid)
-
-        # Make tile predictions using prediction scores
-        tile_preds = torch.argmax(tile_scores, 1)
+            print(("Checking threshold {:" + str(max([len(str(t)) for t in thres])) + "} out of {}").format(i+1, len(thres)))
 
         # Return predictions and true labels
         image_preds = image_output_to_array(predict_images(
             count_image_corrosion(image_ids, tile_preds, tile_targets, image_targets), thres[i])
         )
 
+        # Computer error metrics
         image_metrics = error_metrics(image_preds['image_target'], image_preds['image_pred'])
 
+        # Store threshold and associated F1 score, TPR and FPR in array
         thres_output['thres'][i] = thres[i]
         thres_output['f1'][i] = image_metrics['f1']
         thres_output['tpr'][i] = image_metrics['tpr']
         thres_output['fpr'][i] = image_metrics['fpr']
 
-
     optimal_thres_idx = 0
     optimal_thres = thres[0]
 
+    # Find optimal threshold
     for i in range(1, len(thres)):
         if (
                 (thres_output['f1'][i] > thres_output['f1'][i-1]) and
