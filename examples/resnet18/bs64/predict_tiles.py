@@ -30,6 +30,7 @@ parser.add_argument('--model_path', type=str, required=True)
 parser.add_argument('--image_size', type=int, default=256)
 parser.add_argument('--model', type=str, choices=list(model_type.keys()), default='resnet18')
 parser.add_argument('--batch_size', type=int, default=64)
+parser.add_argument('--ps', type=float, default=0.1)
 parser.add_argument('--output_path', type=str, default=os.getcwd())
 parser.add_argument('--output_filename', type=str, default='tile_preds.csv')
 parser.add_argument('--verbose', action='store_true')
@@ -56,7 +57,7 @@ def main():
     tile_ids, image_ids, image_targets = get_tile_filename_info(data)
 
     # Compute tile prediction scores using trained model
-    tile_scores, tile_targets = predict_tiles(data, model_type[args.model], args.model_path)
+    tile_scores, tile_targets = predict_tiles(data, model_type[args.model], args.model_path, args.ps)
 
     # Make tile predictions using prediction scores
     tile_preds = torch.argmax(tile_scores, 1)

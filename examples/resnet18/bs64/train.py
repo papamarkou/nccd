@@ -28,7 +28,7 @@ parser.add_argument('--image_size', type=int, default=256)
 parser.add_argument('--model', type=str, choices=list(model_dict.keys()), default='resnet18')
 parser.add_argument('--batch_size', type=int, default=64)
 parser.add_argument('--pretrained', action='store_true')
-parser.add_argument('--ps', type=float, default=0.2)
+parser.add_argument('--ps', type=float, default=0.1)
 parser.add_argument('--cyc_len', type=int, default=5)
 parser.add_argument('--lr_lower', type=float, default=1e-4)
 parser.add_argument('--lr_upper', type=float, default=1e-1)
@@ -79,7 +79,7 @@ def main():
         args.verbose
     )
 
-    # Save loss value for each processed batch
+    # Save loss value for each processed batch to file
     if args.save_loss:
         np.savetxt(
             os.path.join(args.output_path, args.output_loss_filename),

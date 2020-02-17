@@ -28,7 +28,9 @@ parser.add_argument('--image_size', type=int, default=256)
 parser.add_argument('--model', type=str, choices=list(model_dict.keys()), default='resnet18')
 parser.add_argument('--batch_size', type=int, default=64)
 parser.add_argument('--pretrained', action='store_true')
-parser.add_argument('--ps', type=float, default=0.2)
+parser.add_argument('--ps', type=float, default=0.1)
+parser.add_argument('--start_lr', type=float, default=0.0000001)
+parser.add_argument('--end_lr', type=float, default=1.)
 parser.add_argument('--num_lr_iters', type=int, default=100)
 parser.add_argument('--output_path', type=str, default=os.getcwd())
 parser.add_argument('--output_filename', type=str, default='lrs_and_losses.csv')
@@ -58,7 +60,9 @@ def main():
         )
 
     # Explore optimal learning rates
-    lrs, losses = tune_lr(data, model_dict[args.model], args.pretrained, args.ps, args.num_lr_iters)
+    lrs, losses = tune_lr(
+        data, model_dict[args.model], args.pretrained, args.ps, args.start_lr, args.end_lr, args.num_lr_iters
+    )
 
     # Create output directory if it does not exist
     if not os.path.isdir(args.output_path):
