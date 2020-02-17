@@ -64,8 +64,8 @@ def tune_thres(data, model_type, trained_model, ps, thres, tpr_lb=None, fpr_ub=N
     for i in range(1, len(thres)):
         if (
                 (thres_output['f1'][i] > thres_output['f1'][i-1]) and
-                ((tpr_lb is None) or (thres_output['tpr'][i] > tpr_lb)) and
-                ((fpr_ub is None) or (thres_output['fpr'][i] < fpr_ub))
+                ((tpr_lb is None) or (thres_output['tpr'][i] >= tpr_lb)) and
+                ((fpr_ub is None) or (thres_output['fpr'][i] <= fpr_ub))
             ):
             optimal_thres_idx = i
             optimal_thres = thres[i]
