@@ -33,7 +33,8 @@ def main():
     # Plot learning rate against loss
     plt.figure()
     # plt.rc('text', usetex=True)
-    sns.lineplot(np.log10(data['lrs']), data['losses'])
+    with plt.rc_context({'lines.linewidth': 2.5}):
+        sns.lineplot(np.log10(data['lrs']), data['losses'])
     plt.xticks(
         ticks=range(-7, 1),
         labels=[
