@@ -23,4 +23,4 @@ def fit_model(data, model, pretrained, ps, cyc_len, lr_lower, lr_upper, path, fi
     if verbose:
         print("Model saved at", output_path)
 
-    return learner.recorder.losses
+    return learner.recorder
