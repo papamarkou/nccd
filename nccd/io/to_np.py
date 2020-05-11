@@ -3,7 +3,7 @@
 import numpy as np
 
 # %% Function for placing tile output to a numpy array
-    
+
 def tile_output_to_array(tile_ids, image_ids, tile_scores, tile_preds, tile_targets, image_targets):
     tile_output = np.empty(
         len(tile_ids),
@@ -16,14 +16,14 @@ def tile_output_to_array(tile_ids, image_ids, tile_scores, tile_preds, tile_targ
             ('image_target', int)
         ]
     )
-    
+
     tile_output['tile_id'] = tile_ids
     tile_output['image_id'] = image_ids
     tile_output['tile_score'] = tile_scores[: , 1].clone().detach().numpy()
     tile_output['tile_pred'] = tile_preds.clone().detach().cpu()
     tile_output['tile_target'] = tile_targets.clone().detach().cpu()
     tile_output['image_target'] = image_targets
-    
+
     return tile_output
 
 # %% Function for placing image output to a numpy array
@@ -40,7 +40,7 @@ def image_corrosion_output_to_array(image_dict):
 
     for i, (k, v) in enumerate(image_dict.items()):
         image_corrosion_output[i] = k, v[0], v[1]
-        
+
     return image_corrosion_output
 
 # %% Function for placing image output to a numpy array
@@ -58,11 +58,11 @@ def image_output_to_array(image_dict):
 
     for i, (k, v) in enumerate(image_dict.items()):
         image_output[i] = k, v[0], v[1], v[2]
-        
+
     return image_output
 
 # %% Function for placing image metrics to a numpy array
-    
+
 def image_metrics_to_array(image_dict):
     image_metrics = np.empty(
         len(image_dict),
@@ -71,5 +71,16 @@ def image_metrics_to_array(image_dict):
 
     for i, (k, v) in enumerate(image_dict.items()):
         image_metrics[i] = k, v
-        
+
     return image_metrics
+
+# %% Function for placing loss values to a numpy array
+
+def all_losses_to_array(loss_dict):
+    all_losses = np.empty(len(loss_dict), dtype=[('nb_batches', int), ('train_losses', float), ('val_losses', float)])
+
+    all_losses['nb_batches'] = loss_dict['nb_batches']
+    all_losses['image_id'] = loss_dict['image_id']
+    all_losses['tile_score'] = loss_dict['tile_score']
+
+    return all_losses
