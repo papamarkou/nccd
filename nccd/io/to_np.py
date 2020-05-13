@@ -77,7 +77,10 @@ def image_metrics_to_array(image_dict):
 # %% Function for placing loss values to a numpy array
 
 def all_losses_to_array(loss_dict):
-    all_losses = np.empty(len(loss_dict), dtype=[('nb_batches', int), ('train_losses', float), ('val_losses', float)])
+    all_losses = np.empty(
+        len(loss_dict['nb_batches']),
+        dtype=[('nb_batches', int), ('train_losses', float), ('val_losses', float)]
+    )
 
     all_losses['nb_batches'] = loss_dict['nb_batches']
     all_losses['train_losses'] = loss_dict['train_losses']
