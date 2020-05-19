@@ -1,8 +1,8 @@
 #!/bin/bash
 
 scripts=(
-  train.sh
-  tune_thres.sh
+  tune_lr.sh
+  plot_lr.sh
 )
 
 for file in "${scripts[@]}"

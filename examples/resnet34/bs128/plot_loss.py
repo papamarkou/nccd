@@ -25,30 +25,27 @@ def main():
     # Load data
     data = np.loadtxt(
         args.data_filename,
-        dtype={'names': ('lrs', 'losses'), 'formats': (float, float)},
+        dtype={'names': ('nb_batches', 'train_losses', 'val_losses'), 'formats': (int, float, float)},
         delimiter=',',
         skiprows=1
     )
+    
+    num_epochs = len(data)
 
     # Plot learning rate against loss
     plt.figure()
     # plt.rc('text', usetex=True)
-    sns.lineplot(np.log10(data['lrs']), data['losses'])
-    plt.xticks(
-        ticks=range(-7, 1),
-        labels=[
-            r'$10^{-7}$',
-            r'$10^{-6}$',
-            r'$10^{-5}$',
-            r'$10^{-4}$',
-            r'$10^{-3}$',
-            r'$10^{-2}$',
-            r'$10^{-1}$',
-            r'$10^{0}$'
-        ]
-    )
-    plt.xlabel('Learning rate')
+    with plt.rc_context({'lines.linewidth': 2.5}):
+        sns.lineplot(list(range(1, num_epochs+1)), data['train_losses'], marker='o', label="Training loss")
+        sns.lineplot(list(range(1, num_epochs+1)), data['val_losses'], marker='o', label="Validation loss")
+    plt.ylim([
+        0.95*min(min(data['train_losses']), min(data['val_losses'])),
+        1.05*max(max(data['train_losses']), max(data['val_losses']))
+    ])
+    plt.xticks(ticks=list(range(1, num_epochs+1)), labels=[str(epoch) for epoch in list(range(1, num_epochs+1))])
+    plt.xlabel('Epoch')
     plt.ylabel('Loss')
+    plt.legend(loc="upper right")
 
     # Create output directory if it does not exist
     if not os.path.isdir(args.output_path):

@@ -5,9 +5,12 @@ import argparse
 
 import numpy as np
 
-from torchvision import models
 from fastai.vision import ImageDataBunch, get_transforms
+from pathlib import Path
+from torchvision import models
 
+from nccd.io import all_losses_to_array
+from nccd.summaries import get_all_losses_per_epoch
 from nccd.train import fit_model
 
 # %% Parse command line arguments
@@ -26,7 +29,7 @@ parser.add_argument('--validation_dirname', type=str, default='validation')
 parser.add_argument('--test_dirname', type=str, default='test')
 parser.add_argument('--image_size', type=int, default=256)
 parser.add_argument('--model', type=str, choices=list(model_dict.keys()), default='resnet18')
-parser.add_argument('--batch_size', type=int, default=128)
+parser.add_argument('--batch_size', type=int, default=32)
 parser.add_argument('--pretrained', action='store_true')
 parser.add_argument('--ps', type=float, default=0.1)
 parser.add_argument('--cyc_len', type=int, default=5)
@@ -35,7 +38,8 @@ parser.add_argument('--lr_upper', type=float, default=1e-1)
 parser.add_argument('--output_path', type=str, default=os.getcwd())
 parser.add_argument('--output_model_filename', type=str, default='model')
 parser.add_argument('--save_loss', action='store_true')
-parser.add_argument('--output_loss_filename', type=str, default='losses.txt')
+parser.add_argument('--output_training_loss_filename', type=str, default='training_losses.txt')
+parser.add_argument('--output_loss_filename', type=str, default='all_losses.csv')
 parser.add_argument('--verbose', action='store_true')
 
 args = parser.parse_args()
@@ -62,11 +66,11 @@ def main():
         )
 
     # Create output directory if it does not exist
-    if not os.path.isdir(args.output_path):
-        os.makedirs(args.output_path, exist_ok=True)
+    if not Path(args.output_path).exists():
+        Path(args.output_path).mkdir(parents=True, exist_ok=True)
 
     # Fit model using one-cycle policy
-    losses = fit_model(
+    recorder = fit_model(
         data,
         model_dict[args.model],
         args.pretrained,
@@ -82,10 +86,21 @@ def main():
     # Save loss value for each processed batch to file
     if args.save_loss:
         np.savetxt(
-            os.path.join(args.output_path, args.output_loss_filename),
-            [l.item() for l in losses],
+            Path(args.output_path).joinpath(args.output_training_loss_filename),
+            [l.item() for l in recorder.losses],
             newline='\n',
             header='losses',
+            comments=''
+        )
+
+        # Save training and validation losses per epoch
+        np.savetxt(
+            Path(args.output_path).joinpath(args.output_loss_filename),
+            all_losses_to_array(get_all_losses_per_epoch(recorder)),
+            fmt=['%d', '%f', '%f'],
+            delimiter=',',
+            newline='\n',
+            header='nb_batches,train_losses,val_losses',
             comments=''
         )
 

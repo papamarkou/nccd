@@ -1,8 +1,10 @@
 #!/bin/bash
 
+source env_vars.sh
+
 python predict_test_images.py \
-    --data_filename $HOME/opt/output/nccd/examples/resnet34/bs128/test_image_corrosion_counts.csv \
-    --thres 13 \
-    --output_path $HOME/opt/output/nccd/examples/resnet34/bs128 \
+    --data_filename $OUTDIR/nccd/examples/$RESNETNAME/$BSNAME/test_image_corrosion_counts.csv \
+    --thres 21 \
+    --output_path $OUTDIR/nccd/examples/$RESNETNAME/$BSNAME \
     --output_filename test_image_preds.csv \
     --verbose
