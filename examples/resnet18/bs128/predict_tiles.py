@@ -4,36 +4,37 @@ import os
 import argparse
 
 import numpy as np
+import torch
 
 from torchvision import models
 from fastai.vision import ImageDataBunch, get_transforms
 
-from nccd.tune import tune_lr
+from nccd.io import get_tile_filename_info
+from nccd.io import tile_output_to_array
+from nccd.predict import predict_tiles
 
 # %% Parse command line arguments
 
-model_dict ={
+model_type ={
     'resnet18': models.resnet18,
     'resnet34': models.resnet34,
     'resnet50': models.resnet50
 }
 
-parser = argparse.ArgumentParser('Model tuner')
+parser = argparse.ArgumentParser('Predictor')
 
 parser.add_argument('--data_path', type=str, required=True)
 parser.add_argument('--train_dirname', type=str, default='training')
-parser.add_argument('--validation_dirname', type=str, default='validation')
 parser.add_argument('--test_dirname', type=str, default='test')
+parser.add_argument('--model_path', type=str, required=True)
 parser.add_argument('--image_size', type=int, default=256)
-parser.add_argument('--model', type=str, choices=list(model_dict.keys()), default='resnet18')
+parser.add_argument('--model', type=str, choices=list(model_type.keys()), default='resnet18')
 parser.add_argument('--batch_size', type=int, default=32)
-parser.add_argument('--pretrained', action='store_true')
 parser.add_argument('--ps', type=float, default=0.1)
-parser.add_argument('--start_lr', type=float, default=0.0000001)
-parser.add_argument('--end_lr', type=float, default=1.)
-parser.add_argument('--num_lr_iters', type=int, default=100)
+parser.add_argument('--wd', type=float, default=0.01)
+parser.add_argument('--mixup', action='store_true')
 parser.add_argument('--output_path', type=str, default=os.getcwd())
-parser.add_argument('--output_filename', type=str, default='lrs_and_losses.csv')
+parser.add_argument('--output_filename', type=str, default='tile_preds.csv')
 parser.add_argument('--verbose', action='store_true')
 
 args = parser.parse_args()
@@ -45,36 +46,41 @@ def main():
     data = ImageDataBunch.from_folder(
         args.data_path,
         train=args.train_dirname,
-        valid=args.validation_dirname,
-        test=args.test_dirname,
+        valid=args.test_dirname,
         ds_tfms=get_transforms(do_flip=True, flip_vert=True, max_lighting=0.1, max_zoom=1.05, max_warp=0.1),
         size=args.image_size,
         bs=args.batch_size
     ).normalize()
 
     if args.verbose:
-        print(
-            len(data.train_ds), "training images",
-            len(data.valid_ds), "validation images and",
-            len(data.test_ds) , "test images"
-        )
+        print(len(data.valid_ds), "test images")
 
-    # Explore optimal learning rates
-    lrs, losses = tune_lr(
-        data, model_dict[args.model], args.pretrained, args.ps, args.start_lr, args.end_lr, args.num_lr_iters
+    # Get tile IDS, image IDs and image targets
+    tile_ids, image_ids, image_targets = get_tile_filename_info(data)
+
+    # Compute tile prediction scores using trained model
+    tile_scores, tile_targets = predict_tiles(
+        data, model_type[args.model], args.model_path, args.ps, args.wd, mixup=args.mixup
     )
+
+    # Make tile predictions using prediction scores
+    tile_preds = torch.argmax(tile_scores, 1)
 
     # Create output directory if it does not exist
     if not os.path.isdir(args.output_path):
         os.makedirs(args.output_path, exist_ok=True)
 
-    # Save learning rates and associated loss values
+    # Create numpy array holding the tile output
+    tile_output = tile_output_to_array(tile_ids, image_ids, tile_scores, tile_preds, tile_targets, image_targets)
+
+    # Save tile IDs, image IDs, tile prediction scores, tile predictions and tile true labels to file
     np.savetxt(
         os.path.join(args.output_path, args.output_filename),
-        np.column_stack((lrs, losses)),
+        tile_output,
+        fmt=['%s', '%s', '%f', '%d', '%d', '%d'],
         delimiter=',',
         newline='\n',
-        header='lrs,losses',
+        header='tile_id,image_id,tile_score,tile_pred,tile_target,image_target',
         comments=''
     )
 

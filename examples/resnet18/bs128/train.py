@@ -27,14 +27,20 @@ parser.add_argument('--data_path', type=str, required=True)
 parser.add_argument('--train_dirname', type=str, default='training')
 parser.add_argument('--validation_dirname', type=str, default='validation')
 parser.add_argument('--test_dirname', type=str, default='test')
+parser.add_argument('--ds_tfms', action='store_true')
 parser.add_argument('--image_size', type=int, default=256)
 parser.add_argument('--model', type=str, choices=list(model_dict.keys()), default='resnet18')
 parser.add_argument('--batch_size', type=int, default=32)
-parser.add_argument('--pretrained', action='store_true')
 parser.add_argument('--ps', type=float, default=0.1)
+parser.add_argument('--wd', type=float, default=0.01)
 parser.add_argument('--cyc_len', type=int, default=5)
-parser.add_argument('--lr_lower', type=float, default=1e-4)
-parser.add_argument('--lr_upper', type=float, default=1e-1)
+parser.add_argument('--lr_interval', action='store_true')
+parser.add_argument('--lr_lower', type=float, default=3e-6)
+parser.add_argument('--lr_upper', type=float, default=3e-4)
+parser.add_argument('--lr', type=float, default=3e-4)
+parser.add_argument('--pretrained', action='store_true')
+parser.add_argument('--unfreeze', action='store_true')
+parser.add_argument('--mixup', action='store_true')
 parser.add_argument('--output_path', type=str, default=os.getcwd())
 parser.add_argument('--output_model_filename', type=str, default='model')
 parser.add_argument('--save_loss', action='store_true')
@@ -47,13 +53,19 @@ args = parser.parse_args()
 # %% Main function
 
 def main():
+    # Set data transformations
+    if args.ds_tfms:
+        ds_tfms = get_transforms(do_flip=True, flip_vert=True, max_lighting=0.1, max_zoom=1.05, max_warp=0.1)
+    else:
+        ds_tfms = None
+
     # Load data
     data = ImageDataBunch.from_folder(
         args.data_path,
         train=args.train_dirname,
         valid=args.validation_dirname,
         test=args.test_dirname,
-        ds_tfms=get_transforms(do_flip=True, flip_vert=True, max_lighting=0.1, max_zoom=1.05, max_warp=0.1),
+        ds_tfms=ds_tfms,
         size=args.image_size,
         bs=args.batch_size
     ).normalize()
@@ -69,18 +81,26 @@ def main():
     if not Path(args.output_path).exists():
         Path(args.output_path).mkdir(parents=True, exist_ok=True)
 
+    # Set up learning rate
+    if args.lr_interval:
+        max_lr = slice(args.lr_lower, args.lr_upper)
+    else:
+        max_lr = args.lr
+
     # Fit model using one-cycle policy
     recorder = fit_model(
         data,
         model_dict[args.model],
-        args.pretrained,
         args.ps,
+        args.wd,
         args.cyc_len,
-        args.lr_lower,
-        args.lr_upper,
+        max_lr,
         args.output_path,
-        args.output_model_filename,
-        args.verbose
+        pretrained=args.pretrained,
+        unfreeze=args.unfreeze,
+        mixup=args.mixup,
+        filename=args.output_model_filename,
+        verbose=args.verbose
     )
 
     # Save loss value for each processed batch to file

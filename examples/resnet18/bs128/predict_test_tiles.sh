@@ -8,7 +8,9 @@ python predict_tiles.py \
     --model_path $OUTDIR/nccd/examples/$RESNETNAME/$BSNAME/model \
     --model $RESNETNAME \
     --batch_size $BSVALUE \
-    --ps 0.1 \
+    --ps $PS \
+    --wd $WD \
+    --mixup \
     --output_path $OUTDIR/nccd/examples/$RESNETNAME/$BSNAME \
     --output_filename test_tile_preds.csv \
     --verbose

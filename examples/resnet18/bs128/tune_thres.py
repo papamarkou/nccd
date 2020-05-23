@@ -28,7 +28,9 @@ parser.add_argument('--image_size', type=int, default=256)
 parser.add_argument('--model', type=str, choices=list(model_type.keys()), default='resnet18')
 parser.add_argument('--batch_size', type=int, default=32)
 parser.add_argument('--ps', type=float, default=0.1)
+parser.add_argument('--wd', type=float, default=0.01)
 parser.add_argument('--thres', nargs='+', type=int, default=[1, 2])
+parser.add_argument('--mixup', action='store_true')
 parser.add_argument('--tpr_lb', type=int)
 parser.add_argument('--fpr_ub', type=int)
 parser.add_argument('--output_path', type=str, default=os.getcwd())
@@ -56,8 +58,8 @@ def main():
 
     # Compute F1, TPR and FPR for different thresholds and find optimal threshold
     optimal_thres, optimal_thres_idx, thres_metrics = tune_thres(
-        data, model_type[args.model], args.model_path, args.ps, args.thres,
-        tpr_lb=args.tpr_lb, fpr_ub=args.fpr_ub, verbose=args.verbose
+        data, model_type[args.model], args.model_path, args.ps, args.wd, args.thres,
+        mixup=args.mixup, tpr_lb=args.tpr_lb, fpr_ub=args.fpr_ub, verbose=args.verbose
     )
 
     # Save optimal threshold and associated F1 score, TPF and FPR to file

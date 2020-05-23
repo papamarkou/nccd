@@ -35,7 +35,7 @@ def main():
     # plt.rc('text', usetex=True)
     with plt.rc_context({'lines.linewidth': 2.5}):
         sns.lineplot(data['thres'], data['f1'], marker='o')
-    plt.scatter(21, 1, marker='o', s=200, color='red')
+    plt.scatter(15, 1, marker='o', s=200, color='red')
     plt.xticks(ticks=[1, 5, 10, 15, 20, 25, 30], labels=['1', '5', '10', '15', '20', '25', '30'])
     plt.xlabel('Threshold c (hyperparameter)')
     plt.ylabel('F1 score')
