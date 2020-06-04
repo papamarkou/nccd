@@ -9,12 +9,11 @@ python train.py \
     --batch_size $BSVALUE \
     --ps $PS \
     --wd $WD \
-    --cyc_len 20 \
+    --cyc_len 50 \
     --lr_interval \
     --lr_lower 0.000001 \
-    --lr_upper 0.1 \
-    --mixup \
-    --output_path $OUTDIR/nccd/examples/$RESNETNAME/$BSNAME \
+    --lr_upper 0.0005 \
+    --output_path $OUTDIR \
     --output_model_filename model \
     --save_loss \
     --output_training_loss_filename training_losses.txt \

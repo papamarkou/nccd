@@ -23,6 +23,7 @@ parser = argparse.ArgumentParser('Predictor')
 parser.add_argument('--data_path', type=str, required=True)
 parser.add_argument('--train_dirname', type=str, default='training')
 parser.add_argument('--test_dirname', type=str, default='test')
+parser.add_argument('--ds_tfms', action='store_true')
 parser.add_argument('--model_path', type=str, required=True)
 parser.add_argument('--image_size', type=int, default=256)
 parser.add_argument('--model', type=str, choices=list(model_type.keys()), default='resnet18')
@@ -43,12 +44,18 @@ args = parser.parse_args()
 # %% Main function
 
 def main():
+    # Set data transformations
+    if args.ds_tfms:
+        ds_tfms = get_transforms(do_flip=True, flip_vert=True, max_lighting=0.1, max_zoom=1.05, max_warp=0.1)
+    else:
+        ds_tfms = None
+
     # Load data
     data = ImageDataBunch.from_folder(
         args.data_path,
         train=args.train_dirname,
         valid=args.test_dirname,
-        ds_tfms=get_transforms(do_flip=True, flip_vert=True, max_lighting=0.1, max_zoom=1.05, max_warp=0.1),
+        ds_tfms=ds_tfms,
         size=args.image_size,
         bs=args.batch_size
     ).normalize()
